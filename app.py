@@ -1,41 +1,75 @@
 import os
+import re
 
 
 def build_note(note_text, note_name):
-    with open(f'{note_name}.txt', 'w', encoding='utf-8') as new_file:
-        new_file.write(note_text)
-    print(f'Заметка {note_name} создана')
+    """Функция создания текстового файла заметки с обработкой ошибок."""
+    try:
+        try:
+            with open(f'{note_name}.txt', 'r+', encoding='utf-8'):
+                print('Такой файл существует')
+        except IOError:
+            with open(f'{note_name}.txt', 'w+', encoding='utf-8'):
+                print('Файл создан')
+        with open(f'{note_name}.txt', 'a', encoding='utf-8') as created_file:
+            created_file.write(note_text)
+            print(f'Заметка {note_name} создана')
+    except Exception as e:
+        print("Что-то пошло не так. Попробуйте еще раз.", e)
 
 def create_note():
+    """
+    Функция ввода названия и текста заметки и обработка ошибки при резком выходе из программы.
+    При создании названия заметки производится проверка на ввод запретных символов.
+    В конце вызывается функция создания текстового файла.
+    """
+    # Обработка ошибок ввода названия заметки
     while True:
         try:
             note_name = input('Введите название заметки: ')
-            break
+            forbidden_symbols = "\\|/*<>?:"  # набор запрещенных символов для Windows
+            pattern = "[{0}]".format(forbidden_symbols)
+            if re.search(pattern, note_name):
+                print("Вы ввели недопустимые символы в названии файла. Переименуйте заметку.")
+            else:
+                print("Название заметки создано.")
+                break
         except KeyboardInterrupt:
             print('\nВы вышли из приложения.')
+        except Exception as e:
+            print("Что-то пошло не так. Попробуйте еще раз.", e)
 
+    # Обработка ошибок ввода текста заметки
     while True:
         try:
             note_text = input('Введите текст заметки: ')
             break
         except KeyboardInterrupt:
             print('\nВы вышли из приложения.')
+        except Exception as e:
+            print("Что-то пошло не так. Попробуйте еще раз.", e)
 
     build_note(note_text, note_name)
 
 
 def read_note():
+    """
+    Функция чтения заметки.
+    Обрабатываются ошибки при вводе существующей заметки, и затем выводится ее текст.
+    """
     while True:
         try:
             read_note_name = input('Введите название существующей заметки: ')
             break
         except KeyboardInterrupt:
             print('\nВы вышли из приложения.')
-    note_path = f'C:\\Users\\ПавловГеоргийСергеев\\PycharmProjects\\Notes_App\\{read_note_name}.txt'
+        except Exception as e:
+            print("Что-то пошло не так. Попробуйте еще раз.", e)
+    note_path = f'{read_note_name}.txt'
     if os.path.isfile(note_path):
         with open(f'{read_note_name}.txt', 'r', encoding='UTF-8') as read_file:
             created_note_text = read_file.read()
-            print(created_note_text)
+            print(f'Текст заметки:\n{created_note_text}')
     else:
         print('Такой заметки не существует.')
 
@@ -47,8 +81,10 @@ def edit_note():
             break
         except KeyboardInterrupt:
             print('\nВы вышли из приложения.')
+        except Exception as e:
+            print("Что-то пошло не так. Попробуйте еще раз.", e)
 
-    note_path = f'C:\\Users\\ПавловГеоргийСергеев\\PycharmProjects\\Notes_App\\{edit_note_name}.txt'
+    note_path = f'{edit_note_name}.txt'
 
     if os.path.isfile(note_path):
         with open(f'{edit_note_name}.txt', 'w', encoding='UTF-8') as edit_file:
@@ -65,8 +101,10 @@ def delete_note():
             break
         except KeyboardInterrupt:
             print('\nВы вышли из приложения.')
+        except Exception as e:
+            print("Что-то пошло не так. Попробуйте еще раз.", e)
 
-    note_path = f'C:\\Users\\ПавловГеоргийСергеев\\PycharmProjects\\Notes_App\\{delete_note_name}.txt'
+    note_path = f'{delete_note_name}.txt'
 
     if os.path.isfile(note_path):
         os.remove(note_path)
@@ -96,9 +134,12 @@ def display_notes():
 
     if choice_sort.lower() == 'по возрастанию':
         sorted_display_texts = sorted(display_texts, key=lambda x: len(x))
+        for text in sorted_display_texts:
+            print(f'Заметки в порядке от самой короткой до самой длинной: {text}')
     else:
         sorted_display_texts = sorted(display_texts, key=lambda x: len(x), reverse=True)
-    print(sorted_display_texts)
+        for text in sorted_display_texts:
+            print(f'Заметки в порядке от самой длинной до самой короткой: {text}')
 
 
 def main():
@@ -139,5 +180,4 @@ def main():
             break
 
 
-if __name__ == '__main__':
-    main()
+main()
