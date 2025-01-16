@@ -17,6 +17,7 @@ def build_note(note_text, note_name):
     except Exception as e:
         print("Что-то пошло не так. Попробуйте еще раз.", e)
 
+
 def create_note():
     """
     Функция ввода названия и текста заметки и обработка ошибки при резком выходе из программы.
@@ -56,7 +57,9 @@ def read_note():
     """
     Функция чтения заметки.
     Обрабатываются ошибки при вводе существующей заметки, и затем выводится ее текст.
+    Также проводится проверка на существование введенного файла.
     """
+    # Обработка ошибок ввода названия заметки
     while True:
         try:
             read_note_name = input('Введите название существующей заметки: ')
@@ -65,7 +68,10 @@ def read_note():
             print('\nВы вышли из приложения.')
         except Exception as e:
             print("Что-то пошло не так. Попробуйте еще раз.", e)
+
     note_path = f'{read_note_name}.txt'
+
+    # Проверка на существование введенного файла по директории
     if os.path.isfile(note_path):
         with open(f'{read_note_name}.txt', 'r', encoding='UTF-8') as read_file:
             created_note_text = read_file.read()
@@ -75,6 +81,11 @@ def read_note():
 
 
 def edit_note():
+    """
+    Функция редактирования заметки.
+    Обрабатываются ошибки при вводе существующей заметки, и затем выводится ее текст.
+    После этого пользователю требуется ввести новый текст заметки.
+    """
     while True:
         try:
             edit_note_name = input('Введите название существующей заметки: ')
@@ -94,7 +105,12 @@ def edit_note():
     else:
         print('Такой заметки не существует.')
 
+
 def delete_note():
+    """
+    Функция удаления заметки.
+    Обрабатываются ошибки при вводе существующей заметки, и затем удаляется ее файл.
+    """
     while True:
         try:
             delete_note_name = input('Введите название существующей заметки: ')
@@ -107,19 +123,29 @@ def delete_note():
     note_path = f'{delete_note_name}.txt'
 
     if os.path.isfile(note_path):
-        os.remove(note_path)
+        os.remove(note_path)    # Удаляется заметка
     else:
         print('Такой заметки не существует.')
 
+
 def display_notes():
+    """
+    Функция отображения отсортированного списка заметок и ее текстов.
+    При этом пользователь может выбрать порядок сортировки по возрастанию или по убыванию.
+    """
+    # list comprehension для создания списка заметок
     notes = [note for note in os.listdir() if note.endswith(".txt")]
+
+    # Пустой список текстов заметок
     display_texts = []
 
+    # Добавление текстов заметок в список display_texts
     for note in notes:
         with open(note, 'r', encoding='utf-8') as display_file:
             display_text = display_file.read()
             display_texts.append(display_text)
 
+    # Проверка на правильный ввод выбора порядка сортировки (по возрастанию/по убыванию)
     while True:
         try:
             choice_sort = input('В каком порядке вам вывести заметки по их длине (по возрастанию/по убыванию)? ')
@@ -132,6 +158,7 @@ def display_notes():
         except KeyboardInterrupt:
             print('\nВы вышли из приложения.')
 
+    # Проверка, какую опцию ввел пользователь
     if choice_sort.lower() == 'по возрастанию':
         sorted_display_texts = sorted(display_texts, key=lambda x: len(x))
         for text in sorted_display_texts:
@@ -143,6 +170,10 @@ def display_notes():
 
 
 def main():
+    """
+    Основная функция.
+    В ней отображается главное меню и выбор действий.
+    """
     while True:
         while True:
             print("""
@@ -154,6 +185,8 @@ def main():
 5. Посмотреть все заметки
 6. Выход
                         """)
+
+            # Проверка ввода правильной опции
             try:
                 choice = int(input('Выберите действие: '))
                 if not isinstance(choice, int) or not 1 <= choice <= 6:
@@ -165,6 +198,7 @@ def main():
             except KeyboardInterrupt:
                 print('\nВы вышли из приложения.')
 
+        # Проверка на то, какую опцию выбрал пользователь
         if choice == 1:
             create_note()
         if choice == 2:
